@@ -117,19 +117,23 @@
     var locationBox = document.getElementById('custom_location_checkbox');
 
     var options = {
-        "animations": animationsCheckbox.checked,
-        "autoOpen": autoOpenCheckbox.checked,
-        "dateFormat": !dateFormatCheckbox.checked,
-        "reduceAnimations":reducedAnimationsCheckbox.checked,
+        'animations': animationsCheckbox.checked,
+        'autoOpen': autoOpenCheckbox.checked,
+        'dateFormat': !dateFormatCheckbox.checked,
+        'reduceAnimations':reducedAnimationsCheckbox.checked,
         'use_celsius': useCelsiusCheckbox.checked,
         'custom_location': locationBox.value
     };
 
-    // Save for next launch
-    localStorage['use_celsius'] = options['use_celsius'];
-    localStorage['custom_location'] = options['custom_location'];
+    for(var index in options) {
+        if(index == "dateFormat"){
+            localStorage[index] = !options[index];
+        }
+        else{
+            localStorage[index] = options[index];
+        }
+    }
 
-    console.log('Got options: ' + JSON.stringify(options));
     return options;
   }
 
@@ -165,15 +169,23 @@
 
     // Load any previously saved configuration, if available
     if(localStorage['use_celsius']) {
-        animationsCheckbox.checked = localStorage['animations'];
-        reducedAnimationsCheckbox.checked = localStorage['reduceAnimations'];
-        autoOpenCheckbox.checked = localStorage['autoOpen'];
-        dateFormatCheckbox.checked = localStorage['dateFormat'];
+        animationsCheckbox.checked = JSON.parse(localStorage['animations']);
+        reducedAnimationsCheckbox.checked = JSON.parse(localStorage['reduceAnimations']);
+        autoOpenCheckbox.checked = JSON.parse(localStorage['autoOpen']);
+        dateFormatCheckbox.checked = JSON.parse(localStorage['dateFormat']);
 
         useCelsiusCheckbox.checked = JSON.parse(localStorage['use_celsius']);
 
         var customLocation = localStorage['custom_location'];
         locationBox.value = customLocation;
+    }
+    else{
+        //Load default settings
+        animationsCheckbox.checked = true;
+        reducedAnimationsCheckbox.checked = false;
+        autoOpenCheckbox.checked = false;
+        dateFormatCheckbox.checked = false;
+        useCelsiusCheckbox.checked = false;
     }
   })();
   </script>
