@@ -72,7 +72,7 @@
       </div>
       <div class='item-container-content'>
         <label class='item'>
-          mm/dd/yy Date Format
+          dd/mm/yy Date Format
           <input id='date_format_checkbox' type='checkbox' class='item-toggle'>
         </label>
       </div>
@@ -119,7 +119,7 @@
     var options = {
         "animations": animationsCheckbox.checked,
         "autoOpen": autoOpenCheckbox.checked,
-        "dateFormat": dateFormatCheckbox.checked,
+        "dateFormat": !dateFormatCheckbox.checked,
         "reduceAnimations":reducedAnimationsCheckbox.checked,
         'use_celsius': useCelsiusCheckbox.checked,
         'custom_location': locationBox.value
@@ -155,15 +155,25 @@
   });
 
   (function() {
+    var animationsCheckbox = document.getElementById('animations_checkbox');
+    var reducedAnimationsCheckbox = document.getElementById('reduced_animations_checkbox');
+    var autoOpenCheckbox = document.getElementById('auto_open_checkbox');
+    var dateFormatCheckbox = document.getElementById('date_format_checkbox');
+
     var useCelsiusCheckbox = document.getElementById('use_celsius_checkbox');
     var locationBox = document.getElementById('custom_location_checkbox');
 
     // Load any previously saved configuration, if available
     if(localStorage['use_celsius']) {
-      useCelsiusCheckbox.checked = JSON.parse(localStorage['use_celsius']);
-      var customLocation = localStorage['custom_location'];
-      console.log("custom location: " + customLocation);
-      locationBox.value = customLocation;
+        animationsCheckbox.checked = localStorage['animations'];
+        reducedAnimationsCheckbox.checked = localStorage['reduceAnimations'];
+        autoOpenCheckbox.checked = localStorage['autoOpen'];
+        dateFormatCheckbox.checked = localStorage['dateFormat'];
+
+        useCelsiusCheckbox.checked = JSON.parse(localStorage['use_celsius']);
+
+        var customLocation = localStorage['custom_location'];
+        locationBox.value = customLocation;
     }
   })();
   </script>
