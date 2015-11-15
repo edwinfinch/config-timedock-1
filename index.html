@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>TimeDock</title>
+  <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
+  <script src='js/slate.min.js'></script>
+  <style>
+  .title {
+    padding: 15px 10px;
+    text-transform: uppercase;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #888888;
+    text-align: center;
+  }
+  </style>
+  </head>
+
+  <body>
+    <h1 class='title'>TimeDock</h1>
+
+    <div class='item-container'>
+      <div class='item-container-content'>
+        <div class='item'>
+          Want more from us? <a href="https://lignite.me/app">Download the Lignite app.</a>
+        </div>
+      </div>
+    </div>
+<!--
+    <div class='item-container'>
+      <div class='item-container-header'>Customizability</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Background Color
+          <input id='background_color_picker' type='text' class='item-color item-color-sunny' value='#000000'>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        Choose the app's background color. Used if High Contrast Mode is not selected. Note: Only available on Basalt watches that support many colors.
+      </div>
+    </div>
+-->
+    <div class='item-container'>
+      <div class='item-container-header'>General</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Animations
+          <input id='animations_checkbox' type='checkbox' class='item-toggle'>
+        </label>
+      </div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Reduced Animations
+          <input id='reduced_animations_checkbox' type='checkbox' class='item-toggle'>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        If checked, TimeDock will reduce animations (saves some battery life).<br>
+        You must have animations on for this to work.
+      </div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Auto Open on Charge
+          <input id='auto_open_checkbox' type='checkbox' class='item-toggle'>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        If checked, TimeDock will automatically open when you place your Pebble on your
+        TimeDock (or plug your Pebble into any charger). <i>Warning: this feature uses the background
+            worker.</i>
+      </div>
+      <div class='item-container-content'>
+        <label class='item'>
+          mm/dd/yy Date Format
+          <input id='date_format_checkbox' type='checkbox' class='item-toggle'>
+        </label>
+      </div>
+    </div>
+
+    <div class='item-container'>
+      <div class='item-container-header'>Weather</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Celsius, eh?
+          <input id='use_celsius_checkbox' type='checkbox' class='item-toggle'>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        If checked, Upside Down will use weather instead of fahrenheit.
+      </div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Custom Location
+          <input id='custom_location_checkbox' type='text' class='item-input' placeholder='Enter a location...'>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        If this field is NOT blank, TimeDock will attempt to use the inputted location for grabbing weather. Otherwise, GPS will be used.
+      </div>
+    </div>
+
+    <div class='item-container'>
+      <div class='button-container'>
+        <input id='submit_button' type='button' class='item-button' value='SUBMIT'>
+      </div>
+    </div>
+  </body>
+  <script>
+  function getConfigData() {
+    var animationsCheckbox = document.getElementById('animations_checkbox');
+    var reducedAnimationsCheckbox = document.getElementById('reduced_animations_checkbox');
+    var autoOpenCheckbox = document.getElementById('auto_open_checkbox');
+    var dateFormatCheckbox = document.getElementById('date_format_checkbox');
+
+    var useCelsiusCheckbox = document.getElementById('use_celsius_checkbox');
+    var locationBox = document.getElementById('custom_location_checkbox');
+
+    var options = {
+        "animations": animationsCheckbox.checked,
+        "autoOpen": autoOpenCheckbox.checked,
+        "dateFormat": dateFormatCheckbox.checked,
+        "reduceAnimations":reducedAnimationsCheckbox.checked,
+        'use_celsius': useCelsiusCheckbox.checked,
+        'custom_location': locationBox.value
+    };
+
+    // Save for next launch
+    localStorage['use_celsius'] = options['use_celsius'];
+    localStorage['custom_location'] = options['custom_location'];
+
+    console.log('Got options: ' + JSON.stringify(options));
+    return options;
+  }
+
+  function getQueryParam(variable, defaultValue) {
+    var query = location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      if (pair[0] === variable) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+    return defaultValue || false;
+  }
+
+  var submitButton = document.getElementById('submit_button');
+  submitButton.addEventListener('click', function() {
+    console.log('Submit');
+
+    // Set the return URL depending on the runtime environment
+    var return_to = getQueryParam('return_to', 'pebblejs://close#');
+    document.location = return_to + encodeURIComponent(JSON.stringify(getConfigData()));
+  });
+
+  (function() {
+    var useCelsiusCheckbox = document.getElementById('use_celsius_checkbox');
+    var locationBox = document.getElementById('custom_location_checkbox');
+
+    // Load any previously saved configuration, if available
+    if(localStorage['use_celsius']) {
+      useCelsiusCheckbox.checked = JSON.parse(localStorage['use_celsius']);
+      var customLocation = localStorage['custom_location'];
+      console.log("custom location: " + customLocation);
+      locationBox.value = customLocation;
+    }
+  })();
+  </script>
+</html>
